@@ -1,23 +1,65 @@
-import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig} from '@loopback/core';
+/**-----------------------------------------------------------------------
+ * Created on Mon Feb 24 2020
+ *
+ * Author : Hanafi Ya'kub
+ *
+ * Date of revision : Mon Feb 24 2020 10:45:10 PM
+ *
+ * Project : EMPC - EMPCORD Projects
+ *
+ * Project Founder : Jatizso
+ *
+ * Copyright (c) 2020 Contributor - Napihup
+ * No license for distribution, intended to be used only within the project
+ *
+--------------------------------------------------------------------------*/
+
+import { BootMixin } from '@loopback/boot';
+import { ApplicationConfig } from '@loopback/core';
 import {
   RestExplorerBindings,
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
-import {RepositoryMixin} from '@loopback/repository';
-import {RestApplication} from '@loopback/rest';
-import {ServiceMixin} from '@loopback/service-proxy';
+import { RepositoryMixin } from '@loopback/repository';
+import { RestApplication } from '@loopback/rest';
+import { ServiceMixin } from '@loopback/service-proxy';
 import path from 'path';
-import {MySequence} from './sequence';
-
+import { EmpcRestRequestSequence } from './sequence';
+import {
+  TokenServiceBindings,
+  TokenServiceContants,
+  PasswordHasherBindings,
+  UserServiceBindings,
+  FormValidationBindings
+}
+  from './bindingKeys';
+import { JWTIdTokenService, P1UserService, BcryptPasswordHasher } from './services';
+import { AuthenticationComponent, registerAuthenticationStrategy } from '@loopback/authentication';
+import { AuthorizationComponent } from '@loopback/authorization';
+import { P1ClientAuthenticationStrategy } from './auth-strategies';
+import { RegisterFormValidator } from './services';
 export class EmpcIamApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
-    super(options);
+    super({
+      rest: {
+        port: 3000,
+        host: 'localhost'
+      }
+    });
+
+    this.setupBindings();
+
+    //Bind authentication and authorization artifacts
+    this.component(AuthenticationComponent);
+    this.component(AuthorizationComponent);
+
+
+    registerAuthenticationStrategy(this, P1ClientAuthenticationStrategy)
 
     // Set up the custom sequence
-    this.sequence(MySequence);
+    this.sequence(EmpcRestRequestSequence);
 
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
@@ -38,5 +80,38 @@ export class EmpcIamApplication extends BootMixin(
         nested: true,
       },
     };
+
+
+  }
+
+  /**
+   * to binds all artifacts for this application
+   */
+  setupBindings(): void {
+
+    this.bind(TokenServiceBindings.TOKEN_SECRET).to(
+      TokenServiceContants.TOKEN_SECRET_VALUE)
+
+    this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
+      TokenServiceContants.TOKEN_EXPIRES_IN_VALUE
+    )
+
+    this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(
+      JWTIdTokenService
+    )
+
+    this.bind(PasswordHasherBindings.SALT_ROUNDS).to(10);
+
+    this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(
+      BcryptPasswordHasher
+    )
+
+    this.bind(UserServiceBindings.USER_SERVICE).toClass(
+      P1UserService
+    )
+
+    this.bind(FormValidationBindings.REGISTER_FORM_VALIDATOR).toClass(
+      RegisterFormValidator
+    )
   }
 }
