@@ -14,7 +14,6 @@
  *
 --------------------------------------------------------------------------*/
 import { inject } from '@loopback/context';
-import { getModelSchemaRef } from '@loopback/rest';
 import { repository } from '@loopback/repository';
 import { UserRepository, UserCredentialRepository } from '../repositories';
 import _ from 'lodash';
@@ -66,7 +65,8 @@ export class UserController {
   async register(
     @requestBody(RegisterRequestBody) newUser: NewUser,
   ): Promise<User> {
-    const validatedNewUser = await this.registerFormValidator.validateForm(newUser);
+    const validatedNewUser =
+      await this.registerFormValidator.validateForm(newUser);
 
     // the hashing the password
     const password = await this.passwordHasher.hashPassword(

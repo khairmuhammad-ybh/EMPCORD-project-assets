@@ -1,3 +1,18 @@
+/**-----------------------------------------------------------------------
+ * Created on Wed Feb 26 2020
+ *
+ * Author : Hanafi Ya'kub
+ *
+ * Date of revision : Wed Feb 26 2020 4:41:37 PM
+ *
+ * Project : EMPC - EMPCORD Projects
+ *
+ * Project Founder : Jatizso
+ *
+ * Copyright (c) 2020 Contributor - Napihup
+ * No license for distribution, intended to be used only within the project
+ *
+--------------------------------------------------------------------------*/
 import { Entity, model, property, hasOne } from '@loopback/repository';
 import { UserCredential } from './user-credential.model';
 const uuid = require('uuid/v4');
@@ -61,7 +76,9 @@ export class User extends Entity {
   rights?: string[];
 
   @property({
-    type: 'date',
+    type: 'string',
+    default: () => moment()
+      .format('MMMM Do YYYY, h:mm:ss a').toString()
   })
   createdDt?: string;
 
