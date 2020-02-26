@@ -13,7 +13,8 @@
  * No license for distribution, intended to be used only within the project
  *
 --------------------------------------------------------------------------*/
-
+import { getModelSchemaRef } from '@loopback/rest'
+import { NewUser } from '../models';
 
 /**------------------------------------------------------------------------
  * User Controller Request Reponse specs
@@ -85,9 +86,14 @@ export const RegisterResponse = {
 }
 
 export const RegisterRequestBody = {
-  description: 'The register form inputs',
+  description: 'The register form input values',
   required: true,
   content: {
-    'application/json': { Schema: RegisterFormSchema }
+    'application/json': {
+      schema: getModelSchemaRef(NewUser, {
+        title: 'NewUser',
+        exclude: ['_id', 'createdDt']
+      })
+    }
   }
 }

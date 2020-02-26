@@ -13,21 +13,19 @@ export class RegisterFormValidator implements FormValidator<NewUser>{
 
   // REGISTER FORM implementation of validator
   validateForm(newUser: NewUser): Promise<NewUser> {
-    // todo code
-    // console.log(newUser);
 
     if (!this.validateEmail(newUser.email)) {
-      throw new HttpErrors.Unauthorized(
-        'Error validating register newUser : email is not valid'
-      )
+      throw new HttpErrors.NotAcceptable(
+        'emailNotvalid'
+      );
     }
 
     if (!this.matchConfirmPassword(
       newUser.userChoicePassword, newUser.userConfirmPassword
     )) {
-      throw new HttpErrors.Unauthorized(
-        'Error validating register newUser : confirm password not matched'
-      )
+      throw new HttpErrors.NotAcceptable(
+        'confirmPasswordNotMatched'
+      );
     }
 
     // re-format the mobile number if provided by user

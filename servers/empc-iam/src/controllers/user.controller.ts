@@ -14,6 +14,7 @@
  *
 --------------------------------------------------------------------------*/
 import { inject } from '@loopback/context';
+import { getModelSchemaRef } from '@loopback/rest';
 import { repository } from '@loopback/repository';
 import { UserRepository, UserCredentialRepository } from '../repositories';
 import _ from 'lodash';

@@ -15,7 +15,7 @@
 --------------------------------------------------------------------------*/
 
 import { TokenService, UserService } from '@loopback/authentication';
-import { BindingKey, Binding } from "@loopback/context";
+import { BindingKey } from "@loopback/context";
 import { PasswordHasher } from './services/passwordhasher';
 import { User, Credential, NewUser } from './models';
 import { FormValidator } from './services';

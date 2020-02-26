@@ -10,10 +10,10 @@ import config from './empc-mongodb.datasource.config.json';
 @lifeCycleObserver('datasource')
 export class EmpcMongodbDataSource extends juggler.DataSource
   implements LifeCycleObserver {
-  static dataSourceName = 'empcMongodb';
+  static dataSourceName = 'EMPCMongodb';
 
   constructor(
-    @inject('datasources.config.empcMongodb', { optional: true })
+    @inject('datasources.config.EMPCMongodb', { optional: true })
     dsConfig: object = config,
   ) {
     super(dsConfig);

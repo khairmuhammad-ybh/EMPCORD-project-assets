@@ -1,6 +1,7 @@
 import { Entity, model, property, hasOne } from '@loopback/repository';
 import { UserCredential } from './user-credential.model';
 const uuid = require('uuid/v4');
+import moment from 'moment';
 
 @model({
   settings: {
@@ -62,7 +63,7 @@ export class User extends Entity {
   @property({
     type: 'date',
   })
-  createDt?: string;
+  createdDt?: string;
 
   @property({
     type: 'string',

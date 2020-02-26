@@ -1,8 +1,19 @@
 /**-----------------------------------------------------------------------
- * Created on Thu Feb 20 2020
+ * Created on Mon Feb 24 2020
  *
- * Copyright (c) 2020 Freelance - Napihup
+ * Author : Hanafi Ya'kub
+ *
+ * Date of revision : Mon Feb 24 2020 10:57:35 PM
+ *
+ * Project : EMPC - EMPCORD Projects
+ *
+ * Project Founder : Jatizso
+ *
+ * Copyright (c) 2020 Contributor - Napihup
+ * No license for distribution, intended to be used only within the project
+ *
 --------------------------------------------------------------------------*/
+
 import { genSalt, hash, compare } from 'bcryptjs';
 import { inject } from '@loopback/core';
 import { PasswordHasherBindings } from '../bindingKeys';
