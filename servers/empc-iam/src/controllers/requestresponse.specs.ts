@@ -28,20 +28,6 @@ const CredentialFormSchema = {
     password: { type: 'string' },
   }
 }
-const RegisterFormSchema = {
-  type: 'object',
-  required: ['email', 'password', 'mobile'],
-  properties: {
-    name: { type: 'string' },
-    userName: { type: 'string' },
-    email: { type: 'string' },
-    mobileNumber: { type: 'string' },
-    roles: { type: ['string'] },
-    rights: { type: ['string'] },
-    userChoicePassword: { type: 'string' },
-    userConfirmPassword: { type: 'string' }
-  }
-}
 const LoginResponseSchema = {
   type: 'object',
   properties: {
@@ -60,7 +46,9 @@ const RegisterResponseSchema = {
   }
 }
 
-
+/**
+ *
+ */
 export const LoginRequestBody = {
   description: 'The Login form Inputs',
   required: true,
@@ -68,7 +56,9 @@ export const LoginRequestBody = {
     'application/json': { schema: CredentialFormSchema }
   }
 }
-
+/**
+ *
+ */
 export const LoginResponse = {
   description: 'The response token on login callback',
   required: true,
@@ -77,6 +67,10 @@ export const LoginResponse = {
   }
 }
 
+/**
+ * This describe the response object schema upon successfully
+ * process for rest endpoint '/register'
+ */
 export const RegisterResponse = {
   description: 'The response when user registering to new account setup',
   required: true,
@@ -85,6 +79,12 @@ export const RegisterResponse = {
   }
 }
 
+/**
+ * This is the object format for the rest end point (Input Body)
+ * Upon requesting for '/register', client shouldnt specify its user _id and
+ * also date creation should be ommitted for allowing server side to append
+ * from DB..
+ */
 export const RegisterRequestBody = {
   description: 'The register form input values',
   required: true,
