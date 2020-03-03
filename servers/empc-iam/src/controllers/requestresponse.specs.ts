@@ -14,7 +14,7 @@
  *
 --------------------------------------------------------------------------*/
 import { getModelSchemaRef } from '@loopback/rest'
-import { NewUser } from '../models';
+import { NewUser, Owner } from '../models';
 
 /**------------------------------------------------------------------------
  * User Controller Request Reponse specs
@@ -43,6 +43,17 @@ const RegisterResponseSchema = {
     name: { type: 'string' },
     email: { type: 'string' },
     createDt: { type: 'date' }
+  }
+}
+
+const OwnerCreationResponseSchema = {
+  type: 'object',
+  properties: {
+    _id: { type: 'string' },
+    userName: { type: 'string' },
+    email: { type: 'string' },
+    accountStatus: { type: 'string' },
+    passwordSet: { type: 'string' }
   }
 }
 
@@ -93,6 +104,32 @@ export const RegisterRequestBody = {
       schema: getModelSchemaRef(NewUser, {
         title: 'NewUser',
         exclude: ['_id', 'createdDt']
+      })
+    }
+  }
+}
+
+export const OwnerCreationRequestBody = {
+  description: 'The owner creation forms',
+  required: true,
+  content: {
+    'application/json': {
+      schema: getModelSchemaRef(NewUser, {
+        title: 'NewUser',
+        exclude: ['_id', 'createdDt', 'status', 'roles', 'rights']
+      })
+    }
+  }
+}
+
+export const OwnerCreationResponse = {
+  description: 'The response body for Owner account creation',
+  required: true,
+  content: {
+    'application/json': {
+      schema: getModelSchemaRef(Owner, {
+        title: 'Owner',
+        exclude: ['roles', 'rights']
       })
     }
   }

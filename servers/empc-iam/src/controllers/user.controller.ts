@@ -26,7 +26,7 @@ import {
   from '../bindingKeys';
 import { PasswordHasher } from '../services/passwordhasher';
 import { TokenService, UserService } from '@loopback/authentication';
-import { User, Credential, NewUser, UserCredential } from '../models';
+import { User, Credential, NewUser, UserCredential, Owner } from '../models';
 import {
   post,
   requestBody,
@@ -36,9 +36,12 @@ import {
   LoginResponse,
   LoginRequestBody,
   RegisterResponse,
-  RegisterRequestBody
+  RegisterRequestBody,
+  OwnerCreationResponse,
+  OwnerCreationRequestBody
 } from './requestresponse.specs';
 import { FormValidator } from '../services';
+import { scryptSync } from 'crypto';
 
 export class UserController {
   constructor(
@@ -57,6 +60,74 @@ export class UserController {
   ) { }
 
 
+  /**
+   * Endpoint for Owner <master> account creation
+   * this account can only be created once with a single <email> address
+   * as the principal, which is the same as <userName>
+   * @param newUser
+   */
+  @post('/users/owner-creation', {
+    responses: {
+      '200': OwnerCreationResponse
+    }
+  })
+  async ownerCreate(
+    @requestBody(OwnerCreationRequestBody) newUser: NewUser,
+  ): Promise<Owner> {
+    var validatedOwnerUser =
+      await this.registerFormValidator.validateForm(newUser);
+    //The hashing the password
+    const password = await this.passwordHasher.hashPassword(
+      validatedOwnerUser.userChoicePassword
+    );
+
+    let savedUser: User;
+
+    //Check if owner account with this email addres exist
+    let user = await this.userRepository.findOne({
+      where: { email: validatedOwnerUser.email }
+    })
+
+    // throw error when owner with same email already exist
+    if (user) {
+      throw new HttpErrors.Conflict(
+        'OwnerAlreadyExist'
+      )
+    }
+
+    // Predefined data account for new Owner
+    validatedOwnerUser.roles = ['master']
+    validatedOwnerUser.rights = ['all']
+    validatedOwnerUser.status = 'active'
+
+    //Save user, excludes the password attributes
+    savedUser = await this.userRepository.create(
+      _.omit(validatedOwnerUser,
+        ['userChoicePassword', 'userConfirmPassword']))
+
+
+    //Create the user credentials entity and save
+    await this.userRepository.userCredential(savedUser._id)
+      .create({
+        hashedPassword: password,
+        accessToken: 'N/A',
+        refreshedToken: 'N/A',
+        credentialType: 'password-db-authentication'
+      })
+
+    // Convert schema to <Owner> for front end display
+    let owner: Owner = Object.assign({}, savedUser, {
+      passwordSet: validatedOwnerUser.userChoicePassword
+    })
+
+    return owner
+  }
+
+
+  /**
+   *
+   * @param newUser
+   */
   @post('/users/register', {
     responses: {
       '200': RegisterResponse

@@ -33,7 +33,7 @@ import {
   FormValidationBindings
 }
   from './bindingKeys';
-import { JWTIdTokenService, P1UserService, BcryptPasswordHasher } from './services';
+import { JWTIdTokenService, EMPCUserService, BcryptPasswordHasher } from './services';
 import { AuthenticationComponent, registerAuthenticationStrategy } from '@loopback/authentication';
 import { AuthorizationComponent } from '@loopback/authorization';
 import { P1ClientAuthenticationStrategy } from './auth-strategies';
@@ -107,7 +107,7 @@ export class EmpcIamApplication extends BootMixin(
     )
 
     this.bind(UserServiceBindings.USER_SERVICE).toClass(
-      P1UserService
+      EMPCUserService
     )
 
     this.bind(FormValidationBindings.REGISTER_FORM_VALIDATOR).toClass(

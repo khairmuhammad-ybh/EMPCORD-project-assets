@@ -33,10 +33,6 @@ export class RegisterFormValidator implements FormValidator<NewUser>{
       mobileNumber: this.formatMobileNumber(newUser.mobileNumber)
     })
 
-    if (user.roles === undefined) {
-      user.roles = [roles.user.STANDARD] // set default role for user
-    }
-
     // promisify the return value - for obeying the implementation rules
     return new Promise(resolve => {
       resolve(user)

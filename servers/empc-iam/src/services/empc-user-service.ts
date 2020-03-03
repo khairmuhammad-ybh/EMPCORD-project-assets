@@ -6,7 +6,7 @@
 
 import { HttpErrors } from '@loopback/rest';
 import { UserRepository } from '../repositories/user.repository';
-import { Credential, User } from '../models';
+import { Credential, User, NewUser } from '../models';
 import { UserService } from '@loopback/authentication';
 import { UserProfile, securityId } from '@loopback/security';
 import { repository } from '@loopback/repository';
@@ -15,7 +15,7 @@ import { PasswordHasherBindings } from '../bindingKeys';
 import { PasswordHasher } from '.';
 import { UserCredentialRepository } from '../repositories';
 
-export class P1UserService implements UserService<User, Credential>{
+export class EMPCUserService implements UserService<User, Credential>{
 
   constructor(
     @repository(UserRepository) public userRepository: UserRepository,
