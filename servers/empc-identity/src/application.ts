@@ -29,7 +29,7 @@ export class EmpcIdentityApplication extends BootMixin(
     super(
       {
         rest: {
-          port: process.argv[process.argv.length - 1] === '--development' ? 3400 : 3000,
+          port: process.argv[process.argv.length - 1] === '--development' ? 3400 : 3100,
           host: 'localhost'
         }
       }

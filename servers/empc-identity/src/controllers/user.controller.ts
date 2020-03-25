@@ -14,9 +14,7 @@
  *
 --------------------------------------------------------------------------*/
 
-interface Iterable<T> {
-  [Symbol.iterator](): Iterator<T>;
-}
+
 
 import { inject } from '@loopback/context';
 import { repository } from '@loopback/repository';
@@ -49,29 +47,8 @@ import {
 } from './requestresponse.spec';
 import { FormValidator } from '../services';
 
-const PING_RESPONSE: ResponseObject = {
-  description: 'Ping Response',
-  content: {
-    'application/json': {
-      schema: {
-        type: 'object',
-        title: 'PingResponse',
-        properties: {
-          greeting: { type: 'string' },
-          date: { type: 'string' },
-          url: { type: 'string' },
-          headers: {
-            type: 'object',
-            properties: {
-              'Content-Type': { type: 'string' },
-            },
-            additionalProperties: true,
-          },
-        },
-      },
-    },
-  },
-};
+import { log } from '../logging/config';
+
 export class UserController {
   constructor(
     @repository(UserRepository)
@@ -97,7 +74,7 @@ export class UserController {
    */
   @post('/users/owner-creation', {
     responses: {
-      '200': PING_RESPONSE,
+      '200': OwnerCreationResponse,
     },
   })
   async ownerCreate(
@@ -119,6 +96,10 @@ export class UserController {
 
     // throw error when owner with same email already exist
     if (user) {
+      let error = new HttpErrors.Conflict(
+        "OwnerAlreadyExist"
+      )
+      log.error('user/register', error);
       throw new HttpErrors.Conflict(
         'OwnerAlreadyExist'
       )
@@ -148,6 +129,8 @@ export class UserController {
     let owner: Owner = Object.assign({}, savedUser, {
       passwordSet: validatedOwnerUser.userChoicePassword
     })
+
+    log.info(`New <${owner.roles}> user created =>  ${owner._id} : ${owner.email}`)
 
     return owner
   }
@@ -194,6 +177,7 @@ export class UserController {
 
     }
     catch (err) {
+      log.error('user/register', err);
       console.log(err);// for logging purpose;
 
       // if email choice already exist in the DB , existence user
