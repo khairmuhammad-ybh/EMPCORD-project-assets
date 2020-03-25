@@ -27,6 +27,8 @@
     "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
     "docker:build": "docker build -t empc-identity .",
     "docker:run": "docker run -p 3000:3000 -d empc-identity",
+    "sudo:docker:build": "sudo docker build -t empc-identity .",
+    "sudo:docker:run": "sudo docker run -p 3000:3000 -d empc-identity",
     "migrate": "node ./dist/migrate",
     "prestart": "npm run build",
     "start": "node -r source-map-support/register .",
