@@ -22,7 +22,6 @@ export class RegisterFormValidator implements FormValidator<NewUser>{
 
   // REGISTER FORM implementation of validator
   validateForm(newUser: NewUser): Promise<NewUser> {
-
     if (!this.validateEmail(newUser.email)) {
       throw new HttpErrors.NotAcceptable(
         'emailNotvalid'

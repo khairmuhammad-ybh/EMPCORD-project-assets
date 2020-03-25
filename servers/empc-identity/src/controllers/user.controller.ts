@@ -1,9 +1,9 @@
 /**-----------------------------------------------------------------------
- * Created on Mon Feb 24 2020
+ * Created on Tue Mar 24 2020
  *
  * Author : Hanafi Ya'kub
  *
- * Date of revision : Mon Feb 24 2020 10:44:38 PM
+ * Date of revision : Tue Mar 24 2020 2:40:34 PM
  *
  * Project : EMPC - EMPCORD Projects
  *
@@ -13,6 +13,11 @@
  * No license for distribution, intended to be used only within the project
  *
 --------------------------------------------------------------------------*/
+
+interface Iterable<T> {
+  [Symbol.iterator](): Iterator<T>;
+}
+
 import { inject } from '@loopback/context';
 import { repository } from '@loopback/repository';
 import { UserRepository, UserCredentialRepository } from '../repositories';
@@ -30,7 +35,9 @@ import { User, Credential, NewUser, UserCredential, Owner } from '../models';
 import {
   post,
   requestBody,
-  HttpErrors
+  HttpErrors,
+  getModelSchemaRef,
+  ResponseObject
 } from '@loopback/rest';
 import {
   LoginResponse,
@@ -39,9 +46,32 @@ import {
   RegisterRequestBody,
   OwnerCreationResponse,
   OwnerCreationRequestBody
-} from './requestresponse.specs';
+} from './requestresponse.spec';
 import { FormValidator } from '../services';
 
+const PING_RESPONSE: ResponseObject = {
+  description: 'Ping Response',
+  content: {
+    'application/json': {
+      schema: {
+        type: 'object',
+        title: 'PingResponse',
+        properties: {
+          greeting: { type: 'string' },
+          date: { type: 'string' },
+          url: { type: 'string' },
+          headers: {
+            type: 'object',
+            properties: {
+              'Content-Type': { type: 'string' },
+            },
+            additionalProperties: true,
+          },
+        },
+      },
+    },
+  },
+};
 export class UserController {
   constructor(
     @repository(UserRepository)
@@ -67,8 +97,8 @@ export class UserController {
    */
   @post('/users/owner-creation', {
     responses: {
-      '200': OwnerCreationResponse
-    }
+      '200': PING_RESPONSE,
+    },
   })
   async ownerCreate(
     @requestBody(OwnerCreationRequestBody) newUser: NewUser,
@@ -210,3 +240,4 @@ export class UserController {
   }
 
 }
+

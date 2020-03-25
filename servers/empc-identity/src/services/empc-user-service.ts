@@ -74,12 +74,13 @@ export class EMPCUserService implements UserService<User, Credential>{
    */
   convertToUserProfile(user: User): UserProfile {
     const userProfile = {
-      [securityId]: user.id,
+      [securityId]: user._id,
       name: user.name,
       id: user._id,
       userName: user.userName,
       email: user.email,
-      roles: user.roles
+      roles: user.roles,
+      rights: user.rights
     }
     return userProfile;
   }

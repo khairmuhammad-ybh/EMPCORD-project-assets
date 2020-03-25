@@ -38,6 +38,7 @@ import { AuthenticationComponent, registerAuthenticationStrategy } from '@loopba
 import { AuthorizationComponent } from '@loopback/authorization';
 import { P1ClientAuthenticationStrategy } from './auth-strategies';
 import { RegisterFormValidator } from './services';
+
 export class EmpcIamApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
@@ -83,6 +84,7 @@ export class EmpcIamApplication extends BootMixin(
 
 
   }
+
 
   /**
    * to binds all artifacts for this application
