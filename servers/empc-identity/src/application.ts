@@ -26,13 +26,13 @@ export class EmpcIdentityApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
-    super(
-      {
-        rest: {
-          port: process.argv[process.argv.length - 1] === '--development' ? 3400 : 3100,
-          host: 'localhost'
-        }
-      }
+    super(options
+      // {
+      //   rest: {
+      //     port: process.argv[process.argv.length - 1] === '--development' ? 3400 : 3100,
+      //     host: 'localhost'
+      //   }
+      // }
     );
 
     // Set up the custom sequence
