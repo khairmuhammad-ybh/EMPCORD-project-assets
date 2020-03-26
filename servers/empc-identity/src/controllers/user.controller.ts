@@ -17,7 +17,7 @@
 
 
 import { inject } from '@loopback/context';
-import { repository } from '@loopback/repository';
+import { repository, WhereBuilder } from '@loopback/repository';
 import { UserRepository, UserCredentialRepository } from '../repositories';
 import _ from 'lodash';
 import {
@@ -88,10 +88,11 @@ export class UserController {
     );
 
     let savedUser: User;
-
     //Check if owner account with this email addres exist
     let user = await this.userRepository.findOne({
-      where: { email: validatedOwnerUser.email }
+      where: {
+        roles: { eq: ['master'] }
+      }
     })
 
     // throw error when owner with same email already exist

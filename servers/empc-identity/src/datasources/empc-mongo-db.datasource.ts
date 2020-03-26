@@ -8,7 +8,7 @@ import { juggler } from '@loopback/repository';
 import devConfig from './epmc-mongo-db.datasource.config.development.json';
 import config from './empc-mongo-db.datasource.config.json';
 
-var dev = process.argv[process.argv.length - 1];
+var env = process.argv[process.argv.length - 1];
 
 @lifeCycleObserver('datasource')
 export class EmpcMongoDbDataSource extends juggler.DataSource
@@ -17,7 +17,7 @@ export class EmpcMongoDbDataSource extends juggler.DataSource
 
   constructor(
     @inject('datasources.config.EMPCMongoDB', { optional: true })
-    dsConfig: object = (dev === '--development') ? devConfig : config
+    dsConfig: object = (env === '--prod') ? config : devConfig
   ) {
     super(dsConfig);
   }
