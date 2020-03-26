@@ -33,9 +33,7 @@ import { User, Credential, NewUser, UserCredential, Owner } from '../models';
 import {
   post,
   requestBody,
-  HttpErrors,
-  getModelSchemaRef,
-  ResponseObject
+  HttpErrors
 } from '@loopback/rest';
 import {
   LoginResponse,
