@@ -34,7 +34,7 @@
     "prestart": "npm run build",
     "start": "node -r source-map-support/register .",
     "start:watch:dev": "tsc-watch --build --onSuccess \"node .\"",
-    "start:watch:ec2": "tsc-watch --build --onSuccess \"node . --prod\"",
+    "start:watch:test": "tsc-watch --build --onSuccess \"node . --test\"",
     "prepublishOnly": "npm run test",
     "empc:test:dev": "mocha--recursive --exit"
   },

@@ -33,7 +33,8 @@ import { User, Credential, NewUser, UserCredential, Owner } from '../models';
 import {
   post,
   requestBody,
-  HttpErrors
+  HttpErrors,
+  param
 } from '@loopback/rest';
 import {
   LoginResponse,
@@ -43,9 +44,10 @@ import {
   OwnerCreationResponse,
   OwnerCreationRequestBody
 } from './requestresponse.spec';
-import { FormValidator } from '../services';
-
+import { FormValidator, EMPCAuthorization } from '../services';
+import { UserProfile, securityId, SecurityBindings } from '@loopback/security';
 import { log } from '../logging/config';
+import { authorize } from '@loopback/authorization';
 
 export class UserController {
   constructor(
@@ -145,50 +147,104 @@ export class UserController {
     }
   })
   @authenticate('jwt')
+  @authorize({ allowedRoles: ['master', 'admin'], voters: [EMPCAuthorization] })
   async register(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     @requestBody(RegisterRequestBody) newUser: NewUser,
   ): Promise<User> {
+    // console.log(newUser);
+
     const validatedNewUser =
       await this.registerFormValidator.validateForm(newUser);
 
-    // the hashing the password
-    const password = await this.passwordHasher.hashPassword(
-      validatedNewUser.userChoicePassword
-    );
+    // check if the user trying to create a master account
+    let roles = validatedNewUser.roles;
+    validatedNewUser.status = 'active'
+
+
+    let allowCreation: boolean = false;
 
     let savedUser: User;
-
-    try {
-      //setup and save the new user
-      savedUser = await this.userRepository.create(
-        _.omit(validatedNewUser,
-          ['userChoicePassword', 'userConfirmPassword']))
-
-      //create the user credentials entity and save
-      await this.userRepository.userCredential(savedUser._id)
-        .create({
-          hashedPassword: password,
-          accessToken: 'N/A',
-          refreshedToken: 'N/A',
-          credentialType: 'password-db-authentication'
-        })
-
-      return savedUser
-
+    if (roles.includes('master')) {
+      allowCreation = false
     }
-    catch (err) {
-      log.error('user/register', err);
-      console.log(err);// for logging purpose;
+    let curUserRoles = currentUserProfile.roles;
 
-      // if email choice already exist in the DB , existence user
-      if (err.code === 11000 && err.errmsg.includes('index: uniqueEmail')) {
-        throw new HttpErrors.Conflict('Email value is already taken');
-      } else {
-        throw new HttpErrors.Unauthorized(
-          'Error saving user to DB '
-        )
+    if (curUserRoles.includes('admin', 'master')) {
+      if (roles.includes('admin')) {
+        allowCreation = true
+      }
+      else {
+        allowCreation = true;
       }
     }
+    else if (!curUserRoles.includes('master')) {
+      if (roles.includes('admin')) {
+        allowCreation = false
+      }
+    }
+
+    if (curUserRoles.includes('admin')) {
+      if (roles.includes('admin')) {
+        throw new HttpErrors.Unauthorized('Forbidden Account Type Creation')
+      }
+
+      try {
+        // proceed in user creation
+        const password = await this.passwordHasher.hashPassword(
+          validatedNewUser.userChoicePassword
+        )
+
+        savedUser = await this.userRepository.create(
+          _.omit(validatedNewUser,
+            ['userChoicePassword', 'userConfirmPassword'])
+        )
+
+
+        await this.userRepository.userCredential(savedUser._id)
+          .create({
+            hashedPassword: password,
+            accessToken: 'NA',
+            refreshedToken: 'NA',
+            credentialType: 'password-db-authentication'
+          })
+
+        return savedUser;
+      }
+      catch (err) {
+        throw new HttpErrors.Unauthorized(err.message)
+      }
+    }
+    else if (curUserRoles.includes('master')) {
+      try {
+        // proceed in user creation
+        const password = await this.passwordHasher.hashPassword(
+          validatedNewUser.userChoicePassword
+        )
+
+        savedUser = await this.userRepository.create(
+          _.omit(validatedNewUser,
+            ['userChoicePassword', 'userConfirmPassword'])
+        )
+
+
+        await this.userRepository.userCredential(savedUser._id)
+          .create({
+            hashedPassword: password,
+            accessToken: 'NA',
+            refreshedToken: 'NA',
+            credentialType: 'password-db-authentication'
+          })
+
+        return savedUser;
+      }
+      catch (err) {
+        throw new HttpErrors.Unauthorized(err.message)
+      }
+    }
+    throw new HttpErrors.Unauthorized('Forbidden Account Type Creation')
+    throw new HttpErrors.Unauthorized('Undefined Error')
   }
 
 

@@ -48,13 +48,15 @@ export async function EMPCAuthorization(
   }
 
   let rolesIsAllowed: boolean = false
-  for (let i = 0; i < currentUser.roles.length; i++) {
-    let userRole = currentUser.roles[i];
-    if (metadata.allowedRoles.includes(userRole)) {
+  console.log(currentUser.roles)
+  console.log(metadata.allowedRoles);
+  for (const role of currentUser.roles) {
+    if (metadata.allowedRoles.includes(role)) {
       rolesIsAllowed = true;
       break;
     }
   }
+  console.log(rolesIsAllowed)
 
   if (!rolesIsAllowed) {
     return AuthorizationDecision.DENY
@@ -67,6 +69,8 @@ export async function EMPCAuthorization(
   if (currentUser.roles.includes('master')) {
     return AuthorizationDecision.ALLOW
   }
-
+  if (rolesIsAllowed) {
+    return AuthorizationDecision.ALLOW
+  }
   return AuthorizationDecision.DENY
 }

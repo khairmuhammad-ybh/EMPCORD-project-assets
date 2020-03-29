@@ -102,7 +102,7 @@ export const RegisterRequestBody = {
   content: {
     'application/json': {
       schema: getModelSchemaRef(NewUser, {
-        title: 'User New',
+        title: 'UserNew',
         exclude: ['_id', 'status', 'createdDt']
       })
     }
