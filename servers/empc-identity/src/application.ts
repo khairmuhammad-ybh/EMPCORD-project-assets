@@ -1,5 +1,5 @@
 import { BootMixin } from '@loopback/boot';
-import { ApplicationConfig } from '@loopback/core';
+import { ApplicationConfig, BindingKey } from '@loopback/core';
 import {
   RestExplorerBindings,
   RestExplorerComponent,
@@ -21,6 +21,21 @@ import { JWTIdTokenService, BcryptPasswordHasher, EMPCUserService, RegisterFormV
 import { AuthenticationComponent, registerAuthenticationStrategy } from '@loopback/authentication';
 import { AuthorizationComponent } from '@loopback/authorization';
 import { EmpcAuthStrategy } from './auth-strategies/empcAuthStrategy';
+import { SECURITY_SCHEME_SPEC, SECURITY_SPEC_OPERATION, SECURITY_SPEC } from './utils/security-specs';
+
+
+/**
+ * Information from package.json
+ */
+export interface PackageInfo {
+  name: string;
+  version: string;
+  description: string;
+}
+export const PackageKey = BindingKey.create<PackageInfo>('application.package');
+
+const pkg: PackageInfo = require('../package.json');
+
 
 export class EmpcIdentityApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
@@ -35,6 +50,15 @@ export class EmpcIdentityApplication extends BootMixin(
       // }
     );
 
+    this.api({
+      openapi: '3.0.0',
+      info: { title: pkg.name, version: pkg.version },
+      paths: {},
+      components: { securitySchemes: SECURITY_SCHEME_SPEC },
+      security: SECURITY_SPEC,
+      servers: [{ url: '/' }],
+    });
+
     // Set up the custom sequence
     this.sequence(EMPCSequence);
 
@@ -45,12 +69,12 @@ export class EmpcIdentityApplication extends BootMixin(
     this.bind(RestExplorerBindings.CONFIG).to({
       path: '/explorer',
     });
+    this.component(RestExplorerComponent);
 
     this.setupBindings();
 
     this.component(AuthenticationComponent);
     this.component(AuthorizationComponent);
-    this.component(RestExplorerComponent);
 
     registerAuthenticationStrategy(this, EmpcAuthStrategy)
 

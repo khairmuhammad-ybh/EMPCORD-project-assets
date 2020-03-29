@@ -14,7 +14,7 @@
  *
 --------------------------------------------------------------------------*/
 import { getModelSchemaRef } from '@loopback/rest'
-import { NewUser, Owner } from '../models';
+import { NewUser, Owner, User } from '../models';
 
 /**------------------------------------------------------------------------
  * User Controller Request Reponse specs
@@ -24,7 +24,7 @@ const CredentialFormSchema = {
   type: 'object',
   required: ['email', 'password'],
   properties: {
-    email: { type: 'string' },
+    userName: { type: 'string' },
     password: { type: 'string' },
   }
 }
@@ -46,16 +46,16 @@ const RegisterResponseSchema = {
   }
 }
 
-const OwnerCreationResponseSchema = {
-  type: 'object',
-  properties: {
-    _id: { type: 'string' },
-    userName: { type: 'string' },
-    email: { type: 'string' },
-    accountStatus: { type: 'string' },
-    passwordSet: { type: 'string' }
-  }
-}
+// const OwnerCreationResponseSchema = {
+//   type: 'object',
+//   properties: {
+//     _id: { type: 'string' },
+//     userName: { type: 'string' },
+//     email: { type: 'string' },
+//     accountStatus: { type: 'string' },
+//     passwordSet: { type: 'string' }
+//   }
+// }
 
 /**
  *
@@ -102,8 +102,8 @@ export const RegisterRequestBody = {
   content: {
     'application/json': {
       schema: getModelSchemaRef(NewUser, {
-        title: 'NewUser',
-        exclude: ['_id', 'createdDt']
+        title: 'User New',
+        exclude: ['_id', 'status', 'createdDt']
       })
     }
   }
@@ -122,25 +122,15 @@ export const OwnerCreationRequestBody = {
   }
 }
 
-// export const OwnerCreationResponse = {
-//   description: 'The response body for Owner account creation',
-//   required: true,
-//   content: {
-//     'application/json': {
-//       schema: getModelSchemaRef(Owner, {
-//         title: 'Owner',
-//         exclude: ['roles', 'rights']
-//       })
-//     }
-//   }
-// }
-
 export const OwnerCreationResponse = {
   description: 'The response body for Owner account creation',
   required: true,
   content: {
     'application/json': {
-      schema: { name: 'string' }
+      schema: getModelSchemaRef(Owner, {
+        title: 'Owner',
+        exclude: ['roles', 'rights']
+      })
     }
   }
 }

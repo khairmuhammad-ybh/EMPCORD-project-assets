@@ -68,8 +68,8 @@ export class JWTTokenService implements TokenService {
           { [securityId]: '', name: '' },
           {
             [securityId]: payload._id,
+            subject: payload.subject,
             name: payload.name,
-            _id: payload._id,
             roles: payload.roles,
             rights: payload.rights
           },
@@ -112,7 +112,8 @@ export class JWTTokenService implements TokenService {
 
     var userDataForToken = {
       _id: userProfile[securityId],
-      name: userProfile.name,
+      subject: userProfile[securityId],
+      name: `${userProfile.firstName} ${userProfile.lastName}`,
       roles: userProfile.roles,
       rights: userProfile.rights
     }
@@ -124,6 +125,10 @@ export class JWTTokenService implements TokenService {
         `Error Signing IDToken : ${err.message}`
       )
     }
+    this.verifyToken(idToken)
+      .then(user => {
+        console.log(user);
+      })
     return idToken;
 
   }

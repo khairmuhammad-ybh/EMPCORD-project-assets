@@ -1,3 +1,19 @@
+/**-----------------------------------------------------------------------
+ * Created on Sun Mar 29 2020
+ *
+ * Author : Hanafi Ya'kub
+ *
+ * Date of revision : Sun Mar 29 2020 3:45:44 PM
+ *
+ * Project : EMPC - EMPCORD Projects
+ *
+ * Project Founder : Jatizso
+ *
+ * Copyright (c) 2020 Contributor - Napihup
+ * No license for distribution, intended to be used only within the project
+ *
+--------------------------------------------------------------------------*/
+
 import { Entity, model, property, hasOne } from '@loopback/repository';
 import { UserCredential } from './user-credential.model';
 import { roles } from '../utils';
@@ -22,15 +38,21 @@ export class User extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: true
   })
-  email: string;
+  firstName: string;
+
+  @property({
+    type: 'string',
+    required: true
+  })
+  lastName: string;
 
   @property({
     type: 'string',
     required: true,
   })
-  name: string;
+  email: string;
 
   @property({
     type: 'string',
@@ -42,7 +64,7 @@ export class User extends Entity {
     type: 'array',
     itemType: 'string',
     required: true,
-    default: () => [roles.user.STANDARD]
+    // default: () => [roles.user.STANDARD]
   })
   roles: string[];
 

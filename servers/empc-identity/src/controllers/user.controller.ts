@@ -28,7 +28,7 @@ import {
 }
   from '../bindingKeys';
 import { PasswordHasher } from '../services/passwordhasher';
-import { TokenService, UserService } from '@loopback/authentication';
+import { TokenService, UserService, authenticate } from '@loopback/authentication';
 import { User, Credential, NewUser, UserCredential, Owner } from '../models';
 import {
   post,
@@ -144,6 +144,7 @@ export class UserController {
       '200': RegisterResponse
     }
   })
+  @authenticate('jwt')
   async register(
     @requestBody(RegisterRequestBody) newUser: NewUser,
   ): Promise<User> {

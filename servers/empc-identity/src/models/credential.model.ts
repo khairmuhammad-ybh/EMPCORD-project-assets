@@ -20,7 +20,7 @@ export class Credential extends Model {
   @property({
     type: 'string',
   })
-  email: string;
+  userName: string;
 
   @property({
     type: 'string',

@@ -41,6 +41,7 @@ export class EmpcAuthStrategy implements AuthenticationStrategy {
    * @param request
    */
   getCredentialsFromRequest(request: Request): string {
+    console.log(request.headers.authorization);
     if (!request.headers.authorization) {
       throw new HttpErrors.Unauthorized(
         'Authorization headers not found'

@@ -33,16 +33,17 @@ export class EMPCUserService implements UserService<User, Credential>{
    * @return <User>
    */
   async verifyCredentials(credential: Credential): Promise<User> {
-    const invalidCredentialError = 'Invalid email or password'
-    var p: string | undefined;
+    const invalidCredentialError = 'Invalid Password'
+    const userNotFound = 'Email/Username provided is not a registered User'
+
+
     const foundUser = await this.userRepository.findOne({
-      where: { email: credential.email },
+      where: { or: [{ email: credential.userName }, { userName: credential.userName }] },
     });
 
     if (!foundUser) {
-      throw new HttpErrors.Unauthorized(invalidCredentialError);
+      throw new HttpErrors.Unauthorized(userNotFound);
     }
-
     const credentialFound = await this.userCredsRepository.findOne({
       where: { userId: foundUser._id }
     })
@@ -75,7 +76,8 @@ export class EMPCUserService implements UserService<User, Credential>{
   convertToUserProfile(user: User): UserProfile {
     const userProfile = {
       [securityId]: user._id,
-      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       id: user._id,
       userName: user.userName,
       email: user.email,
