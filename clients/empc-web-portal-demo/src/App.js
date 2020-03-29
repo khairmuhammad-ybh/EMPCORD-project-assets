@@ -11,8 +11,7 @@ function App() {
   return (
     <Container fluid className="mt-4">
       <Row>
-        <Col md="12" className="">
-
+        <Col md="3" className="">
          <CDatePicker />
 
          {/* <CButton id = 'cs' size='md'

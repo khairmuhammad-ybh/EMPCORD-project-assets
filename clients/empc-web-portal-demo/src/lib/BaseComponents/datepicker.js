@@ -139,16 +139,16 @@ class CalendarContainer extends Component {
 
 
   todayYear = () => {
-    return this.state.today.format('YYYY');
+    return moment().format('YYYY');
   }
   todayMonth = () => {
-    return this.state.today.format('MMM');
+    return moment().format('MMM');
   }
   todaysDate = () => {
-    return this.state.today.format.get('date');
+    return moment().get('date');
   }
   today = () => {
-    return this.state.today.format("D");
+    return moment().format("D");
   }
 
   year = () => {
@@ -359,7 +359,6 @@ class CalendarContainer extends Component {
 
 
   render () {
-    // console.log(this.state)
     return (
       <div id = "calendar-box" className ={`calendar-box ${this.setDisplayState()}`}
       onClick = {this.props.calendarOnClicked }
