@@ -1,0 +1,141 @@
+/**-----------------------------------------------------------------------
+ * Created on Sat Mar 28 2020
+ *
+ * Author : Hanafi Ya'kub
+ *
+ * Date of revision : Sat Mar 28 2020 3:53:02 PM
+ *
+ * Project : EMPC - EMPCORD Projects
+ *
+ * Project Founder : Jatizso
+ *
+ * Copyright (c) 2020 Contributor - Napihup
+ * No license for distribution, intended to be used only within the project
+ *
+--------------------------------------------------------------------------*/
+.datepicker {
+  display: flex;
+  position: relative;
+}
+
+
+
+.calendar-box {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  align-content: center;
+  background: white;
+  border-radius: $border-radius;
+  border: $border-line;
+  height: auto;
+  top:110%;
+  box-shadow: $box-shadow;
+  z-index: 1;
+  padding-bottom: 10px;
+}
+
+.calendar-box.cal-open {
+  display: flex;
+}
+.calendar-box.cal-close {
+  display: none;
+}
+
+
+.calendar-box .cal-header{
+  display: flex;
+  flex-direction: row;
+  height: 48px;
+  width: 100%;
+  align-items: center;
+  border-bottom: 1px solid $border-gray;
+}
+.calendar-box .cal-month-year {
+  width: 150px; 
+  text-align: center;
+  font-weight: bold;
+}
+
+.calendar-box .cal-body{
+  display: flex;
+  max-width: inherit;
+  height: 100%;
+  padding: 0px 20px 0px 20px;
+  // background: green;
+}
+.cal-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+}
+.cal-table thead tr th,
+.cal-table tbody tr td{
+  border-top: none;
+  border-bottom: none;
+  font-weight: 300;
+  font-size: 0.93em;
+  padding: 6px 0px;
+  color : $gray-700;
+  text-align: center;
+}
+
+// .cal-table tbody tr td {
+//   cursor: pointer;
+//   border: 1px solid transparent;
+// }
+
+// .cal-table tbody tr td:hover {
+//   background : $gray-200;
+//   border-radius: $border-radius;
+// }
+
+.cal-table tbody tr .blank {
+  color : $gray-500
+}
+
+.cal-table tbody tr .day {
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.cal-table tbody tr .day:hover {
+  background : $gray-200;
+  border-radius: $border-radius;
+}
+
+.cal-table tbody tr .current-day {
+  background: $white;
+  color : $primary;
+  border-radius: $border-radius;
+  font-weight: bolder;
+  border-bottom: 1px solid $primary;
+}
+// .cal-table tbody tr .current-day:hover {
+//   background: $secondary;
+//   color : $white;
+//   border-radius: $border-radius;
+//   font-weight: bolder;
+// }
+.cal-table tbody tr .selected-day {
+  background: $primary !important;
+  color : $white !important;
+  border-radius: $border-radius !important;
+}
+
+.calendar-box .cal-body .days {
+  font-weight: 300 !important;
+}
+
+.calendar-box .cal-footer {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+}
+.calendar-box .cal-footer .today-btn {
+  width: 100%;
+}

@@ -1,0 +1,59 @@
+/**-----------------------------------------------------------------------
+ * Created on Fri Mar 27 2020
+ *
+ * Author : Hanafi Ya'kub
+ *
+ * Date of revision : Fri Mar 27 2020 4:34:43 PM
+ *
+ * Project : EMPC - EMPCORD Projects
+ *
+ * Project Founder : Jatizso
+ *
+ * Copyright (c) 2020 Contributor - Napihup
+ * No license for distribution, intended to be used only within the project
+ *
+--------------------------------------------------------------------------*/
+.c-button{
+  transform: translateY(0px);
+  transition: 0.3s all ease;
+  font-family: $cfont-family;
+}.c-button:hover {
+  transform: translateY(0px);
+  transition: 0.3s all ease;
+  border: 1px solid transparent;
+}.c-button:focus {
+  box-shadow: $button-shadow !important;
+  outline: none !important;
+  border: 1px solid transparent;
+}.c-button:active {
+  box-shadow: $button-shadow !important;
+  outline: none;
+  border: 1px solid transparent;
+}
+.c-button-link {
+  transform: translateY(0px);
+  transition: 0.3s all ease;
+  font-family: $cfont-family;
+}
+.c-button-link:focus {
+  box-shadow: none !important;;
+  outline: none !important;
+  border: 1px solid transparent;
+}
+.c-button-link:active {
+  box-shadow: none !important;;
+  outline: none !important;
+  border: 1px solid transparent;
+}
+
+.c-button.pill {
+  border-radius: $rounded-pill;
+}.c-button.circle {
+  border-radius: 50%;
+}
+.c-button-link.with-text i {
+  margin-right: 5px;
+}
+.c-button.with-text i{
+  margin-right: 5px;
+}
