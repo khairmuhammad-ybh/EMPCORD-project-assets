@@ -125,10 +125,6 @@ export class JWTTokenService implements TokenService {
         `Error Signing IDToken : ${err.message}`
       )
     }
-    this.verifyToken(idToken)
-      .then(user => {
-        console.log(user);
-      })
     return idToken;
 
   }

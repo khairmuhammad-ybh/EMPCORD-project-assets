@@ -48,15 +48,12 @@ export async function EMPCAuthorization(
   }
 
   let rolesIsAllowed: boolean = false
-  console.log(currentUser.roles)
-  console.log(metadata.allowedRoles);
   for (const role of currentUser.roles) {
     if (metadata.allowedRoles.includes(role)) {
       rolesIsAllowed = true;
       break;
     }
   }
-  console.log(rolesIsAllowed)
 
   if (!rolesIsAllowed) {
     return AuthorizationDecision.DENY

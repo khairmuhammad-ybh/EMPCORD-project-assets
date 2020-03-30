@@ -14,7 +14,7 @@
  *
 --------------------------------------------------------------------------*/
 import { getModelSchemaRef } from '@loopback/rest'
-import { NewUser, Owner, User } from '../models';
+import { NewUser, Owner, User, Officer, OfficerFormCreation } from '../models';
 
 /**------------------------------------------------------------------------
  * User Controller Request Reponse specs
@@ -90,6 +90,19 @@ export const RegisterResponse = {
   }
 }
 
+export const OfficerCreateResponse = {
+  description: 'The Response body on Officer creation',
+  required: true,
+  content: {
+    'application/json': {
+      schema: getModelSchemaRef(Officer, {
+        title: 'OfficerNew'
+      })
+    }
+  }
+}
+
+
 /**
  * This is the object format for the rest end point (Input Body)
  * Upon requesting for '/register', client shouldnt specify its user _id and
@@ -104,6 +117,18 @@ export const RegisterRequestBody = {
       schema: getModelSchemaRef(NewUser, {
         title: 'UserNew',
         exclude: ['_id', 'status', 'createdDt']
+      })
+    }
+  }
+}
+
+export const OfficerCreateRequestBody = {
+  description: 'The Officer creation form data',
+  required: true,
+  content: {
+    'application/json': {
+      schema: getModelSchemaRef(OfficerFormCreation, {
+        title: 'OfficerReq'
       })
     }
   }

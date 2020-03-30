@@ -20,13 +20,13 @@ import { User } from '.';
 export class NewUser extends User {
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
   userChoicePassword: string;
 
   @property({
     type: 'string',
-    required: true
+    required: false
   })
   userConfirmPassword: string;
 

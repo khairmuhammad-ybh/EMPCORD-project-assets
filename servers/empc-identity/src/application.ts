@@ -22,6 +22,7 @@ import { AuthenticationComponent, registerAuthenticationStrategy } from '@loopba
 import { AuthorizationComponent } from '@loopback/authorization';
 import { EmpcAuthStrategy } from './auth-strategies/empcAuthStrategy';
 import { SECURITY_SCHEME_SPEC, SECURITY_SPEC_OPERATION, SECURITY_SPEC } from './utils/security-specs';
+import { OfficerFormValidation } from './services/creation-form-validator';
 
 
 /**
@@ -103,5 +104,6 @@ export class EmpcIdentityApplication extends BootMixin(
     this.bind(PasswordHasherBindings.SALT_ROUNDS).to(10);
     this.bind(UserServiceBindings.USER_SERVICE).toClass(EMPCUserService)
     this.bind(FormValidationBindings.REGISTER_FORM_VALIDATOR).toClass(RegisterFormValidator)
+    this.bind(FormValidationBindings.OFFICER_CREATION_FORM_VALIDATOR).toClass(OfficerFormValidation);
   }
 }

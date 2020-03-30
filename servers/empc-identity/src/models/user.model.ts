@@ -16,7 +16,6 @@
 
 import { Entity, model, property, hasOne } from '@loopback/repository';
 import { UserCredential } from './user-credential.model';
-import { roles } from '../utils';
 import moment from 'moment';
 const uuid = require('uuid/v4');
 
@@ -84,6 +83,7 @@ export class User extends Entity {
   @property({
     type: 'string',
     required: true,
+    default: 'active'
   })
   status: string;
 

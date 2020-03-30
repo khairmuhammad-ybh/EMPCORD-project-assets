@@ -5,3 +5,4 @@ export * from './empc-user-service';
 export * from './p1form-validator';
 export * from './register-form-validator';
 export * from './authorizor.service';
+export * from './creation-form-validator';

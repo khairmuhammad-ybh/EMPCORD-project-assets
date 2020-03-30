@@ -3,3 +3,8 @@ export * from './user-credential.model';
 export * from './credential.model';
 export * from './new-user.model';
 export * from './owner.model';
+export * from './worker.model';
+export * from './officer.model';
+export * from './zone.model';
+export * from './officerFormCreation.model';
+export * from './form.interface';

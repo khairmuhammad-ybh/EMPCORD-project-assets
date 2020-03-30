@@ -15,10 +15,11 @@
 --------------------------------------------------------------------------*/
 
 import { FormValidator } from '.';
-import { NewUser } from '../models';
+import { NewUser, Form, OfficerFormCreation } from '../models';
 import { HttpErrors } from '@loopback/rest';
 
 export class RegisterFormValidator implements FormValidator<NewUser>{
+
 
   // REGISTER FORM implementation of validator
   validateForm(newUser: NewUser): Promise<NewUser> {
