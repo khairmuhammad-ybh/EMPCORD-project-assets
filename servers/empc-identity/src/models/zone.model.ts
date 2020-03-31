@@ -1,5 +1,6 @@
 import { Entity, model, property, hasMany } from '@loopback/repository';
 import { Officer } from './officer.model';
+const shortid = require('shortid');
 
 @model()
 export class Zone extends Entity {
@@ -8,6 +9,7 @@ export class Zone extends Entity {
     id: true,
     generated: false,
     required: true,
+    default: shortid.generate
   })
   _id: string;
 

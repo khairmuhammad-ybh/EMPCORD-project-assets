@@ -16,6 +16,8 @@ import {
   put,
   del,
   requestBody,
+  RestBindings,
+  Request
 } from '@loopback/rest';
 import { Zone } from '../models';
 import { ZoneRepository } from '../repositories';
@@ -23,11 +25,13 @@ import { UserProfile, securityId, SecurityBindings } from '@loopback/security';
 import { authorize } from '@loopback/authorization';
 import { TokenService, UserService, authenticate } from '@loopback/authentication';
 import { EMPCAuthorization } from '../services';
+import { inject } from '@loopback/context';
 
 export class ZoneController {
   constructor(
     @repository(ZoneRepository)
     public zoneRepository: ZoneRepository,
+    @inject(RestBindings.Http.REQUEST) private request: Request,
   ) { }
 
   @post('/zones', {
@@ -88,7 +92,21 @@ export class ZoneController {
   async find(
     @param.query.object('filter', getFilterSchemaFor(Zone)) filter?: Filter<Zone>,
   ): Promise<Zone[]> {
-    return this.zoneRepository.find(filter);
+    // console.log(JSON.parse(this.request.query.filter));
+    // console.log(filter);
+    return this.zoneRepository.find({
+      where: { name: 'E' },
+      offset: 0,
+      limit: 100,
+      skip: 0,
+      order: ['string'],
+      include: [{
+        relation: 'officers', scope: {
+          fields: {
+          }
+        }
+      }]
+    });
   }
 
   @patch('/zones', {

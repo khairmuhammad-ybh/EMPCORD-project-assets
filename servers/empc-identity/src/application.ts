@@ -67,9 +67,9 @@ export class EmpcIdentityApplication extends BootMixin(
     this.static('/', path.join(__dirname, '../public'));
 
     // Customize @loopback/rest-explorer configuration here
-    this.bind(RestExplorerBindings.CONFIG).to({
-      path: '/explorer',
-    });
+    // this.bind(RestExplorerBindings.CONFIG).to({
+    //   path: '/explorer',
+    // });
     this.component(RestExplorerComponent);
 
     this.setupBindings();

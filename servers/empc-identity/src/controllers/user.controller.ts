@@ -234,7 +234,11 @@ export class UserController {
     // - if failed , delete both User Model and User Crendential for rollback
 
     let officer = await this.officerRepository.create(
-      { officerId: validatedOfficerForm.officerId, zoneId: validatedOfficerForm.zoneId }
+      {
+        officerId: validatedOfficerForm.officerId,
+        zoneId: validatedOfficerForm.zoneId,
+        userId: newUser._id
+      }
     )
 
     if (!officer) {
@@ -252,6 +256,8 @@ export class UserController {
     // to client
     log.info(`New <${officer.officerId}> Officer created`)
     return officer;
+
+    throw new HttpErrors.Unauthorized('Method not implemented yet');
 
   }
 

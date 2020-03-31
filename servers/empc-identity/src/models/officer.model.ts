@@ -15,6 +15,11 @@ export class Officer extends Entity {
   })
   zoneId?: string;
 
+  @property({
+    type: 'string',
+  })
+  userId?: string;
+
   constructor(data?: Partial<Officer>) {
     super(data);
   }
