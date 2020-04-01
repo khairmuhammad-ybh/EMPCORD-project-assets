@@ -17,8 +17,6 @@
 import { Entity, model, property, hasOne } from '@loopback/repository';
 import { UserCredential } from './user-credential.model';
 import moment from 'moment';
-import { Officer } from './officer.model';
-
 const uuid = require('uuid/v4');
 
 @model()

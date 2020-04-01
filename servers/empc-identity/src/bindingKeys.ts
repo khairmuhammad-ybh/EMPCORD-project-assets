@@ -14,13 +14,13 @@
  *
 --------------------------------------------------------------------------*/
 import { TokenService, UserService } from '@loopback/authentication';
-import { BindingKey, Binding } from "@loopback/context";
+import { BindingKey } from "@loopback/context";
 import { PasswordHasher } from './services/passwordhasher';
-import { User, Credential, NewUser, Form, OfficerFormCreation } from './models';
+import { User, Credential, NewUser } from './models';
 import { FormValidator } from './services';
 import fs from 'fs';
 import path from 'path';
-import { CreationFormValidation } from './services/creation-form-validator';
+// import { CreationFormValidation } from './services/creation-form-validator';
 
 
 // Contants used for creating/verify JWT services
@@ -71,12 +71,6 @@ export namespace UserServiceBindings {
 export namespace FormValidationBindings {
   export const REGISTER_FORM_VALIDATOR = BindingKey.create<FormValidator<NewUser>>(
     'registration.form.validator'
-  )
-  export const OFFICER_CREATION_FORM_VALIDATOR = BindingKey.create<CreationFormValidation<Form>>(
-    'officer.creation.form.validator'
-  )
-  export const WORKER_CREATION_FORM_VALIDATOR = BindingKey.create<CreationFormValidation<Form>>(
-    'worker.creatio.form.validator'
   )
 }
 

@@ -14,8 +14,8 @@
  *
 --------------------------------------------------------------------------*/
 import { inject } from '@loopback/context';
-import { repository, WhereBuilder } from '@loopback/repository';
-import { UserRepository, UserCredentialRepository, OfficerRepository } from '../repositories';
+import { repository } from '@loopback/repository';
+import { UserRepository, UserCredentialRepository } from '../repositories';
 import _ from 'lodash';
 import {
   PasswordHasherBindings,
@@ -26,13 +26,13 @@ import {
   from '../bindingKeys';
 import { PasswordHasher } from '../services/passwordhasher';
 import { TokenService, UserService, authenticate } from '@loopback/authentication';
-import { User, Credential, NewUser, UserCredential, Owner, Officer, OfficerFormCreation, Form } from '../models';
+import { User, Credential, NewUser, Owner, } from '../models';
 import {
   post,
+  get,
   requestBody,
   HttpErrors,
-  param,
-  RestBindings
+  RestBindings,
 } from '@loopback/rest';
 import {
   LoginResponse,
@@ -41,17 +41,12 @@ import {
   RegisterRequestBody,
   OwnerCreationResponse,
   OwnerCreationRequestBody,
-  OfficerCreateResponse,
-  OfficerCreateRequestBody
+  MeResponse
 } from './requestresponse.spec';
 import { FormValidator, EMPCAuthorization } from '../services';
 import { UserProfile, securityId, SecurityBindings } from '@loopback/security';
 import { log } from '../logging/config';
 import { authorize } from '@loopback/authorization';
-import { CreationFormValidation } from '../services/creation-form-validator';
-
-import moment from 'moment';
-const uuid = require('uuid/v4');
 
 export class UserController {
   constructor(
@@ -59,8 +54,6 @@ export class UserController {
     public userRepository: UserRepository,
     @repository(UserCredentialRepository)
     public userCredentialRepository: UserCredentialRepository,
-    @repository(OfficerRepository)
-    public officerRepository: OfficerRepository,
     @inject(PasswordHasherBindings.PASSWORD_HASHER)
     public passwordHasher: PasswordHasher<string>,
     @inject(TokenServiceBindings.TOKEN_SERVICE)
@@ -69,8 +62,6 @@ export class UserController {
     public userService: UserService<User, Credential>,
     @inject(FormValidationBindings.REGISTER_FORM_VALIDATOR)
     public registerFormValidator: FormValidator<any>,
-    @inject(FormValidationBindings.OFFICER_CREATION_FORM_VALIDATOR)
-    public officerFormValidator: CreationFormValidation<OfficerFormCreation>
   ) { }
 
 
@@ -114,6 +105,7 @@ export class UserController {
       )
     }
 
+
     // Predefined data account for new Owner
     validatedOwnerUser.roles = ['master']
     validatedOwnerUser.rights = ['all']
@@ -123,7 +115,6 @@ export class UserController {
     savedUser = await this.userRepository.create(
       _.omit(validatedOwnerUser,
         ['userChoicePassword', 'userConfirmPassword']))
-
 
     //Create the user credentials entity and save
     await this.userRepository.userCredential(savedUser._id)
@@ -264,6 +255,25 @@ export class UserController {
       idToken: idToken,
       accessToken: accessToken
     }
+  }
+
+  @get('/users/me', {
+    responses: {
+      '200': MeResponse
+    }
+  })
+  @authenticate('jwt')
+  async me(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+  ): Promise<User> {
+
+    let id = currentUserProfile[securityId];
+    let foundUser = await this.userRepository.findById(id);
+    if (!foundUser) {
+      throw new HttpErrors.Unauthorized('Method not implemented yet');
+    }
+    return foundUser;
   }
 
 }

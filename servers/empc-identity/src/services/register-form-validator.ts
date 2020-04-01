@@ -15,7 +15,7 @@
 --------------------------------------------------------------------------*/
 
 import { FormValidator } from '.';
-import { NewUser, Form, OfficerFormCreation } from '../models';
+import { NewUser } from '../models';
 import { HttpErrors } from '@loopback/rest';
 
 export class RegisterFormValidator implements FormValidator<NewUser>{
