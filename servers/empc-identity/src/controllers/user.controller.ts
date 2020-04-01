@@ -31,7 +31,8 @@ import {
   post,
   requestBody,
   HttpErrors,
-  param
+  param,
+  RestBindings
 } from '@loopback/rest';
 import {
   LoginResponse,
@@ -144,136 +145,17 @@ export class UserController {
   }
 
 
-
-
-  @post('/users/create/officer', {
-    responses: {
-      '200': OfficerCreateResponse
-    }
-  })
-  @authenticate('jwt')
-  @authorize({ allowedRoles: ['master', 'admin'], voters: [EMPCAuthorization] })
-  async createOfficer(
-    @inject(SecurityBindings.USER)
-    currentUserProfile: UserProfile,
-    @requestBody(OfficerCreateRequestBody) newOfficerForm: OfficerFormCreation): Promise<Officer> {
-
-    let obj: OfficerFormCreation = Object.assign({}, newOfficerForm);
-    var validatedOfficerForm = await this.officerFormValidator.validateForm(obj);
-
-    let newUser = new NewUser();
-
-    // Initialized Auto Gen Fields
-    newUser._id = uuid()
-    newUser.createdDt = moment().format('MMMM Do YYYY, h:mm:ss a').toString()
-    newUser.status = 'active';
-
-    // Populate other fields to NewUser Object
-    newUser.userChoicePassword = validatedOfficerForm.userChoicePassword;
-    newUser.userConfirmPassword = validatedOfficerForm.userConfirmPassword;
-    newUser.userName = validatedOfficerForm.userName;
-    newUser.firstName = validatedOfficerForm.firstName;
-    newUser.lastName = validatedOfficerForm.lastName;
-    newUser.email = validatedOfficerForm.email;
-    newUser.mobileNumber = validatedOfficerForm.mobileNumber;
-    newUser.roles = validatedOfficerForm.roles;
-    newUser.rights = validatedOfficerForm.rights
-
-    // Checking for the UserName / Email
-    // if its already used as existence user in Database, throw Error
-    let foundUser = await this.userRepository.findOne({
-      where: { or: [{ email: newUser.email }, { userName: newUser.userName }] }
-    })
-
-    // Checking for Offcier ID Duplication
-    let foundOfficer = await this.officerRepository.findOne({
-      where: { officerId: validatedOfficerForm.officerId }
-    });
-
-    if (foundOfficer) {
-      throw new HttpErrors.Unauthorized(
-        'Officer ID already being used -  please use different ID'
-      )
-    }
-
-    if (foundUser) {
-      throw new HttpErrors.Unauthorized(
-        'User with username/email already exist in our database'
-      )
-    }
-
-    // Hashing the password
-    let password = await this.passwordHasher.hashPassword(
-      newUser.userChoicePassword
-    )
-
-    // Contruct the User Model and save to DB with its _id
-    await this.userRepository.create(
-      _.omit(newUser, 'userChoicePassword', 'userConfirmPassword',
-      )
-    )
-
-    // Contruct the UserCredential Model with its hashedpassword and
-    // store in DB - If failed to saved this object, deleyte the User Model
-    // by _id for rollback
-    let result = await this.userRepository.userCredential(newUser._id)
-      .create({
-        hashedPassword: password,
-        accessToken: 'N/A',
-        refreshedToken: 'N/A',
-        credentialType: 'password-db-authentication'
-      })
-
-    if (!result) {
-      await this.userRepository.deleteById(newUser._id);
-      throw new HttpErrors.Unauthorized('Error saving credentials to DB ')
-    }
-
-
-    // Contruct the Officer Model and save in DB
-    // - if failed , delete both User Model and User Crendential for rollback
-
-    let officer = await this.officerRepository.create(
-      {
-        officerId: validatedOfficerForm.officerId,
-        zoneId: validatedOfficerForm.zoneId,
-        userId: newUser._id
-      }
-    )
-
-    if (!officer) {
-      await this.userRepository.deleteById(newUser._id);
-      let userCred = await this.userCredentialRepository.findOne({
-        where: { userId: newUser._id }
-      })
-      if (userCred) {
-        await this.userCredentialRepository.delete(userCred);
-      }
-      throw new HttpErrors.Unauthorized('Error saving Officer Data in DB ')
-    }
-
-    // if all UOW succeeded, construct the response object and send back
-    // to client
-    log.info(`New <${officer.officerId}> Officer created`)
-    return officer;
-
-    throw new HttpErrors.Unauthorized('Method not implemented yet');
-
-  }
-
-
-
   /**
    *
    * @param newUser
    */
-  @post('/users/create/admin', {
+  @post('/users/create', {
     responses: {
       '200': RegisterResponse
     }
   })
   @authenticate('jwt')
-  @authorize({ allowedRoles: ['master'], voters: [EMPCAuthorization] })
+  @authorize({ allowedRoles: ['master', 'admin'], voters: [EMPCAuthorization] })
   async register(
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
@@ -285,9 +167,10 @@ export class UserController {
     const validatedNewUser =
       await this.registerFormValidator.validateForm(newUser);
 
-    let foundUser = this.userRepository.findOne({
+    let foundUser = await this.userRepository.findOne({
       where: { or: [{ userName: newUser.userName }, { email: newUser.email }] }
     })
+
 
     if (foundUser) {
       throw new HttpErrors.Unauthorized('User with username/email already exist in our database')
@@ -297,9 +180,36 @@ export class UserController {
       validatedNewUser.userChoicePassword
     )
 
-    if (!validatedNewUser.rights.includes('administration')) {
-      validatedNewUser.rights = ['administration']
+    // Check for current user roles authority to create such account based
+    // on his/her roles
+    let requesterRoles = currentUserProfile.roles;
+
+    let newUserRoles = validatedNewUser.roles;
+
+    var isAllowCreation: boolean = false;
+
+    if (newUserRoles.includes('master')) {
+      isAllowCreation = false
     }
+
+    else if (newUserRoles.includes('admin') && requesterRoles.includes('master')) {
+      // only Master can create an adminstrator account
+      isAllowCreation = true
+    }
+
+    else if (newUserRoles.includes('admin') && requesterRoles.includes('admin')) {
+      isAllowCreation = false
+    }
+
+    else {
+      isAllowCreation = true
+    }
+
+    if (!isAllowCreation) {
+      throw new HttpErrors.Unauthorized('Not Authorized to create Such Account')
+    }
+
+    // after checking for rights grant
 
     validatedNewUser.status = 'active'
 

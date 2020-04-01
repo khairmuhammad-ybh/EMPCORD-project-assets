@@ -17,7 +17,7 @@
 import { Entity, model, property, hasOne } from '@loopback/repository';
 import { UserCredential } from './user-credential.model';
 import moment from 'moment';
-import {Officer} from './officer.model';
+import { Officer } from './officer.model';
 
 const uuid = require('uuid/v4');
 
@@ -91,10 +91,6 @@ export class User extends Entity {
 
   @hasOne(() => UserCredential)
   userCredential: UserCredential;
-
-  @hasOne(() => Officer)
-  officer: Officer;
-  // Define well-known properties here
 
 
   constructor(data?: Partial<User>) {
