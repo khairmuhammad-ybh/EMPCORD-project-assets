@@ -17,7 +17,7 @@ export class EmpcMongoDbDataSource extends juggler.DataSource
 
   constructor(
     @inject('datasources.config.EMPCMongoDB', { optional: true })
-    dsConfig: object = (env === '--test') ? config : devConfig
+    dsConfig: object = (env === '--dockerize') ? config : devConfig
   ) {
     super(dsConfig);
   }
