@@ -1,7 +1,7 @@
 {
   "name": "EMPCMongoDB",
   "connector": "mongodb",
-  "url": "mongodb://localhost:27017/empc-db",
+  "url": "mongodb://192.168.64.8:27017/empc-db",
   "host": "",
   "port": 0,
   "user": "",
