@@ -1,0 +1,1496 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "empc-identity",
+    "version": "2.0.0"
+  },
+  "paths": {
+    "/ping": {
+      "get": {
+        "x-controller-name": "PingController",
+        "x-operation-name": "ping",
+        "tags": [
+          "PingController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Ping Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "PingResponse",
+                  "properties": {
+                    "greeting": {
+                      "type": "string"
+                    },
+                    "date": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "headers": {
+                      "type": "object",
+                      "properties": {
+                        "Content-Type": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "PingController.ping"
+      }
+    },
+    "/users/create/admin": {
+      "post": {
+        "x-controller-name": "UserController",
+        "x-operation-name": "register",
+        "tags": [
+          "UserController"
+        ],
+        "responses": {
+          "200": {
+            "description": "The response when user registering to new account setup",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "createDt": {
+                      "type": "date"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "The register form input values",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserNew"
+              }
+            }
+          },
+          "x-parameter-index": 1
+        },
+        "operationId": "UserController.register"
+      }
+    },
+    "/users/create/officer": {
+      "post": {
+        "x-controller-name": "UserController",
+        "x-operation-name": "createOfficer",
+        "tags": [
+          "UserController"
+        ],
+        "responses": {
+          "200": {
+            "description": "The Response body on Officer creation",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfficerNew"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "The Officer creation form data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfficerReq"
+              }
+            }
+          },
+          "x-parameter-index": 1
+        },
+        "operationId": "UserController.createOfficer"
+      }
+    },
+    "/users/login": {
+      "post": {
+        "x-controller-name": "UserController",
+        "x-operation-name": "login",
+        "tags": [
+          "UserController"
+        ],
+        "responses": {
+          "200": {
+            "description": "The response token on login callback",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "idToken": {
+                      "type": "string"
+                    },
+                    "accessToken": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "The Login form Inputs",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "userName": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "UserController.login"
+      }
+    },
+    "/users/owner-creation": {
+      "post": {
+        "x-controller-name": "UserController",
+        "x-operation-name": "ownerCreate",
+        "tags": [
+          "UserController"
+        ],
+        "responses": {
+          "200": {
+            "description": "The response body for Owner account creation",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Owner"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "description": "The owner creation forms",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewUser"
+              }
+            }
+          }
+        },
+        "operationId": "UserController.ownerCreate"
+      }
+    },
+    "/users/{id}/officer": {
+      "post": {
+        "x-controller-name": "UserOfficerController",
+        "x-operation-name": "create",
+        "tags": [
+          "UserOfficerController"
+        ],
+        "responses": {
+          "200": {
+            "description": "User model instance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Officer"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewOfficerInUser"
+              }
+            }
+          },
+          "x-parameter-index": 1
+        },
+        "operationId": "UserOfficerController.create"
+      },
+      "patch": {
+        "x-controller-name": "UserOfficerController",
+        "x-operation-name": "patch",
+        "tags": [
+          "UserOfficerController"
+        ],
+        "responses": {
+          "200": {
+            "description": "User.Officer PATCH success count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "loopback.Count",
+                  "properties": {
+                    "count": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "where",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Officer.WhereFilter",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfficerPartial"
+              }
+            }
+          },
+          "x-parameter-index": 1
+        },
+        "operationId": "UserOfficerController.patch"
+      },
+      "get": {
+        "x-controller-name": "UserOfficerController",
+        "x-operation-name": "get",
+        "tags": [
+          "UserOfficerController"
+        ],
+        "responses": {
+          "200": {
+            "description": "User has one Officer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Officer"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        ],
+        "operationId": "UserOfficerController.get"
+      },
+      "delete": {
+        "x-controller-name": "UserOfficerController",
+        "x-operation-name": "delete",
+        "tags": [
+          "UserOfficerController"
+        ],
+        "responses": {
+          "200": {
+            "description": "User.Officer DELETE success count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "loopback.Count",
+                  "properties": {
+                    "count": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "where",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Officer.WhereFilter",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        ],
+        "operationId": "UserOfficerController.delete"
+      }
+    },
+    "/zones/count": {
+      "get": {
+        "x-controller-name": "ZoneController",
+        "x-operation-name": "count",
+        "tags": [
+          "ZoneController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Zone model count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "loopback.Count",
+                  "properties": {
+                    "count": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "where",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Zone.WhereFilter",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        ],
+        "operationId": "ZoneController.count"
+      }
+    },
+    "/zones/{id}/officers": {
+      "post": {
+        "x-controller-name": "ZoneOfficerController",
+        "x-operation-name": "create",
+        "tags": [
+          "ZoneOfficerController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Zone model instance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Officer"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewOfficerInZone"
+              }
+            }
+          },
+          "x-parameter-index": 1
+        },
+        "operationId": "ZoneOfficerController.create"
+      },
+      "patch": {
+        "x-controller-name": "ZoneOfficerController",
+        "x-operation-name": "patch",
+        "tags": [
+          "ZoneOfficerController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Zone.Officer PATCH success count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "loopback.Count",
+                  "properties": {
+                    "count": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "where",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Officer.WhereFilter",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfficerPartial"
+              }
+            }
+          },
+          "x-parameter-index": 1
+        },
+        "operationId": "ZoneOfficerController.patch"
+      },
+      "get": {
+        "x-controller-name": "ZoneOfficerController",
+        "x-operation-name": "find",
+        "tags": [
+          "ZoneOfficerController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of Zone has many Officer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Officer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        ],
+        "operationId": "ZoneOfficerController.find"
+      },
+      "delete": {
+        "x-controller-name": "ZoneOfficerController",
+        "x-operation-name": "delete",
+        "tags": [
+          "ZoneOfficerController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Zone.Officer DELETE success count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "loopback.Count",
+                  "properties": {
+                    "count": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "where",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Officer.WhereFilter",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        ],
+        "operationId": "ZoneOfficerController.delete"
+      }
+    },
+    "/zones/{id}": {
+      "put": {
+        "x-controller-name": "ZoneController",
+        "x-operation-name": "replaceById",
+        "tags": [
+          "ZoneController"
+        ],
+        "responses": {
+          "204": {
+            "description": "Zone PUT success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Zone"
+              }
+            }
+          },
+          "x-parameter-index": 1
+        },
+        "operationId": "ZoneController.replaceById"
+      },
+      "patch": {
+        "x-controller-name": "ZoneController",
+        "x-operation-name": "updateById",
+        "tags": [
+          "ZoneController"
+        ],
+        "responses": {
+          "204": {
+            "description": "Zone PATCH success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZonePartial"
+              }
+            }
+          },
+          "x-parameter-index": 1
+        },
+        "operationId": "ZoneController.updateById"
+      },
+      "get": {
+        "x-controller-name": "ZoneController",
+        "x-operation-name": "findById",
+        "tags": [
+          "ZoneController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Zone model instance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneWithRelations"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Zone.Filter",
+                  "properties": {
+                    "where": {
+                      "title": "Zone.WhereFilter",
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    "fields": {
+                      "title": "Zone.Fields",
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "boolean"
+                        },
+                        "name": {
+                          "type": "boolean"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "offset": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "limit": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "example": 100
+                    },
+                    "skip": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "order": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "include": {
+                      "title": "Zone.IncludeFilter",
+                      "type": "array",
+                      "items": {
+                        "title": "Zone.IncludeFilter.Items",
+                        "type": "object",
+                        "properties": {
+                          "relation": {
+                            "type": "string"
+                          },
+                          "scope": {
+                            "properties": {
+                              "where": {
+                                "type": "object",
+                                "additionalProperties": true
+                              },
+                              "fields": {
+                                "type": "object",
+                                "properties": {},
+                                "additionalProperties": true
+                              },
+                              "offset": {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              "limit": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "example": 100
+                              },
+                              "skip": {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              "order": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "additionalProperties": false,
+                            "title": "Zone.ScopeFilter"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        ],
+        "operationId": "ZoneController.findById"
+      },
+      "delete": {
+        "x-controller-name": "ZoneController",
+        "x-operation-name": "deleteById",
+        "tags": [
+          "ZoneController"
+        ],
+        "responses": {
+          "204": {
+            "description": "Zone DELETE success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "operationId": "ZoneController.deleteById"
+      }
+    },
+    "/zones": {
+      "post": {
+        "x-controller-name": "ZoneController",
+        "x-operation-name": "create",
+        "tags": [
+          "ZoneController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Zone model instance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Zone"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewZone"
+              }
+            }
+          }
+        },
+        "operationId": "ZoneController.create"
+      },
+      "patch": {
+        "x-controller-name": "ZoneController",
+        "x-operation-name": "updateAll",
+        "tags": [
+          "ZoneController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Zone PATCH success count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "loopback.Count",
+                  "properties": {
+                    "count": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "where",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Zone.WhereFilter",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZonePartial"
+              }
+            }
+          }
+        },
+        "operationId": "ZoneController.updateAll"
+      },
+      "get": {
+        "x-controller-name": "ZoneController",
+        "x-operation-name": "find",
+        "tags": [
+          "ZoneController"
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of Zone model instances",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ZoneWithRelations"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "filter",
+            "in": "query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Zone.Filter",
+                  "properties": {
+                    "where": {
+                      "title": "Zone.WhereFilter",
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    "fields": {
+                      "title": "Zone.Fields",
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "boolean"
+                        },
+                        "name": {
+                          "type": "boolean"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "offset": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "limit": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "example": 100
+                    },
+                    "skip": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "order": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "include": {
+                      "title": "Zone.IncludeFilter",
+                      "type": "array",
+                      "items": {
+                        "title": "Zone.IncludeFilter.Items",
+                        "type": "object",
+                        "properties": {
+                          "relation": {
+                            "type": "string"
+                          },
+                          "scope": {
+                            "properties": {
+                              "where": {
+                                "type": "object",
+                                "additionalProperties": true
+                              },
+                              "fields": {
+                                "type": "object",
+                                "properties": {},
+                                "additionalProperties": true
+                              },
+                              "offset": {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              "limit": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "example": 100
+                              },
+                              "skip": {
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              "order": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "additionalProperties": false,
+                            "title": "Zone.ScopeFilter"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        ],
+        "operationId": "ZoneController.find"
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    },
+    "schemas": {
+      "Officer": {
+        "title": "Officer",
+        "properties": {
+          "officerId": {
+            "type": "string"
+          },
+          "zoneId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "officerId"
+        ],
+        "additionalProperties": false
+      },
+      "NewOfficerInUser": {
+        "title": "NewOfficerInUser",
+        "description": "(Schema options: { title: 'NewOfficerInUser', exclude: [ 'officerId' ], optional: [ 'userId' ] })",
+        "properties": {
+          "zoneId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OfficerPartial": {
+        "title": "OfficerPartial",
+        "description": "(Schema options: { partial: true })",
+        "properties": {
+          "officerId": {
+            "type": "string"
+          },
+          "zoneId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Owner": {
+        "title": "Owner",
+        "description": "(Schema options: { title: 'Owner', exclude: [ 'roles', 'rights' ] })",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "userName": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "mobileNumber": {
+            "type": "string"
+          },
+          "createdDt": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "passwordSet": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userName",
+          "firstName",
+          "lastName",
+          "email",
+          "mobileNumber",
+          "status",
+          "passwordSet"
+        ],
+        "additionalProperties": false
+      },
+      "NewUser": {
+        "title": "NewUser",
+        "description": "(Schema options: { title: 'NewUser', exclude: [ '_id', 'createdDt', 'status', 'roles', 'rights' ] })",
+        "properties": {
+          "userName": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "mobileNumber": {
+            "type": "string"
+          },
+          "userChoicePassword": {
+            "type": "string"
+          },
+          "userConfirmPassword": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userName",
+          "firstName",
+          "lastName",
+          "email",
+          "mobileNumber"
+        ],
+        "additionalProperties": false
+      },
+      "OfficerNew": {
+        "title": "OfficerNew",
+        "description": "(Schema options: { title: 'OfficerNew' })",
+        "properties": {
+          "officerId": {
+            "type": "string"
+          },
+          "zoneId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "officerId"
+        ],
+        "additionalProperties": false
+      },
+      "OfficerReq": {
+        "title": "OfficerReq",
+        "description": "(Schema options: { title: 'OfficerReq' })",
+        "properties": {
+          "userName": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "mobileNumber": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "officerId": {
+            "type": "string"
+          },
+          "userChoicePassword": {
+            "type": "string"
+          },
+          "userConfirmPassword": {
+            "type": "string"
+          },
+          "zoneId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OfficerFormCreation": {
+        "title": "OfficerFormCreation",
+        "properties": {
+          "userName": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "mobileNumber": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "officerId": {
+            "type": "string"
+          },
+          "userChoicePassword": {
+            "type": "string"
+          },
+          "userConfirmPassword": {
+            "type": "string"
+          },
+          "zoneId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserNew": {
+        "title": "UserNew",
+        "description": "(Schema options: { title: 'UserNew', exclude: [ '_id', 'status', 'createdDt' ] })",
+        "properties": {
+          "userName": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "mobileNumber": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "userChoicePassword": {
+            "type": "string"
+          },
+          "userConfirmPassword": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userName",
+          "firstName",
+          "lastName",
+          "email",
+          "mobileNumber",
+          "roles"
+        ],
+        "additionalProperties": false
+      },
+      "Credential": {
+        "title": "Credential",
+        "properties": {
+          "userName": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "NewOfficerInZone": {
+        "title": "NewOfficerInZone",
+        "description": "(Schema options: { title: 'NewOfficerInZone', exclude: [ 'officerId' ], optional: [ 'zoneId' ] })",
+        "properties": {
+          "zoneId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Zone": {
+        "title": "Zone",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "_id",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "NewZone": {
+        "title": "NewZone",
+        "description": "(Schema options: { title: 'NewZone', exclude: [ '_id' ] })",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "OfficerWithRelations": {
+        "title": "OfficerWithRelations",
+        "description": "(Schema options: { includeRelations: true })",
+        "properties": {
+          "officerId": {
+            "type": "string"
+          },
+          "zoneId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "officerId"
+        ],
+        "additionalProperties": false
+      },
+      "ZoneWithRelations": {
+        "title": "ZoneWithRelations",
+        "description": "(Schema options: { includeRelations: true })",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "officers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OfficerWithRelations"
+            }
+          }
+        },
+        "required": [
+          "_id",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "ZonePartial": {
+        "title": "ZonePartial",
+        "description": "(Schema options: { partial: true })",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ]
+}

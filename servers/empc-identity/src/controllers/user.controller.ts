@@ -1,9 +1,9 @@
 /**-----------------------------------------------------------------------
- * Created on Mon Feb 24 2020
+ * Created on Tue Mar 24 2020
  *
  * Author : Hanafi Ya'kub
  *
- * Date of revision : Mon Feb 24 2020 10:44:38 PM
+ * Date of revision : Tue Mar 24 2020 2:40:34 PM
  *
  * Project : EMPC - EMPCORD Projects
  *
@@ -25,12 +25,14 @@ import {
 }
   from '../bindingKeys';
 import { PasswordHasher } from '../services/passwordhasher';
-import { TokenService, UserService } from '@loopback/authentication';
-import { User, Credential, NewUser, UserCredential, Owner } from '../models';
+import { TokenService, UserService, authenticate } from '@loopback/authentication';
+import { User, Credential, NewUser, Owner, } from '../models';
 import {
   post,
+  get,
   requestBody,
-  HttpErrors
+  HttpErrors,
+  RestBindings,
 } from '@loopback/rest';
 import {
   LoginResponse,
@@ -38,9 +40,13 @@ import {
   RegisterResponse,
   RegisterRequestBody,
   OwnerCreationResponse,
-  OwnerCreationRequestBody
-} from './requestresponse.specs';
-import { FormValidator } from '../services';
+  OwnerCreationRequestBody,
+  MeResponse
+} from './requestresponse.spec';
+import { FormValidator, EMPCAuthorization } from '../services';
+import { UserProfile, securityId, SecurityBindings } from '@loopback/security';
+import { log } from '../logging/config';
+import { authorize } from '@loopback/authorization';
 
 export class UserController {
   constructor(
@@ -67,8 +73,8 @@ export class UserController {
    */
   @post('/users/owner-creation', {
     responses: {
-      '200': OwnerCreationResponse
-    }
+      '200': OwnerCreationResponse,
+    },
   })
   async ownerCreate(
     @requestBody(OwnerCreationRequestBody) newUser: NewUser,
@@ -81,18 +87,24 @@ export class UserController {
     );
 
     let savedUser: User;
-
     //Check if owner account with this email addres exist
     let user = await this.userRepository.findOne({
-      where: { email: validatedOwnerUser.email }
+      where: {
+        roles: { eq: ['master'] }
+      }
     })
 
     // throw error when owner with same email already exist
     if (user) {
+      let error = new HttpErrors.Conflict(
+        "OwnerAlreadyExist"
+      )
+      log.error('user/register', error);
       throw new HttpErrors.Conflict(
         'OwnerAlreadyExist'
       )
     }
+
 
     // Predefined data account for new Owner
     validatedOwnerUser.roles = ['master']
@@ -103,7 +115,6 @@ export class UserController {
     savedUser = await this.userRepository.create(
       _.omit(validatedOwnerUser,
         ['userChoicePassword', 'userConfirmPassword']))
-
 
     //Create the user credentials entity and save
     await this.userRepository.userCredential(savedUser._id)
@@ -119,6 +130,8 @@ export class UserController {
       passwordSet: validatedOwnerUser.userChoicePassword
     })
 
+    log.info(`New <${owner.roles}> user created =>  ${owner._id} : ${owner.email}`)
+
     return owner
   }
 
@@ -127,54 +140,89 @@ export class UserController {
    *
    * @param newUser
    */
-  @post('/users/register', {
+  @post('/users/create', {
     responses: {
       '200': RegisterResponse
     }
   })
+  @authenticate('jwt')
+  @authorize({ allowedRoles: ['master', 'admin'], voters: [EMPCAuthorization] })
   async register(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     @requestBody(RegisterRequestBody) newUser: NewUser,
   ): Promise<User> {
-    const validatedNewUser =
-      await this.registerFormValidator.validateForm(newUser);
-
-    // the hashing the password
-    const password = await this.passwordHasher.hashPassword(
-      validatedNewUser.userChoicePassword
-    );
 
     let savedUser: User;
 
-    try {
-      //setup and save the new user
-      savedUser = await this.userRepository.create(
-        _.omit(validatedNewUser,
-          ['userChoicePassword', 'userConfirmPassword']))
+    const validatedNewUser =
+      await this.registerFormValidator.validateForm(newUser);
 
-      //create the user credentials entity and save
-      await this.userRepository.userCredential(savedUser._id)
-        .create({
-          hashedPassword: password,
-          accessToken: 'N/A',
-          refreshedToken: 'N/A',
-          credentialType: 'password-db-authentication'
-        })
+    let foundUser = await this.userRepository.findOne({
+      where: { or: [{ userName: newUser.userName }, { email: newUser.email }] }
+    })
 
-      return savedUser
 
+    if (foundUser) {
+      throw new HttpErrors.Unauthorized('User with username/email already exist in our database')
     }
-    catch (err) {
-      console.log(err);// for logging purpose;
 
-      // if email choice already exist in the DB , existence user
-      if (err.code === 11000 && err.errmsg.includes('index: uniqueEmail')) {
-        throw new HttpErrors.Conflict('Email value is already taken');
-      } else {
-        throw new HttpErrors.Unauthorized(
-          'Error saving user to DB '
-        )
-      }
+    let password = await this.passwordHasher.hashPassword(
+      validatedNewUser.userChoicePassword
+    )
+
+    // Check for current user roles authority to create such account based
+    // on his/her roles
+    let requesterRoles = currentUserProfile.roles;
+
+    let newUserRoles = validatedNewUser.roles;
+
+    var isAllowCreation: boolean = false;
+
+    if (newUserRoles.includes('master')) {
+      isAllowCreation = false
     }
+
+    else if (newUserRoles.includes('admin') && requesterRoles.includes('master')) {
+      // only Master can create an adminstrator account
+      isAllowCreation = true
+    }
+
+    else if (newUserRoles.includes('admin') && requesterRoles.includes('admin')) {
+      isAllowCreation = false
+    }
+
+    else {
+      isAllowCreation = true
+    }
+
+    if (!isAllowCreation) {
+      throw new HttpErrors.Unauthorized('Not Authorized to create Such Account')
+    }
+
+    // after checking for rights grant
+
+    validatedNewUser.status = 'active'
+
+    //Save user, excludes the password attributes
+    savedUser = await this.userRepository.create(
+      _.omit(validatedNewUser,
+        ['userChoicePassword', 'userConfirmPassword']))
+
+
+    //Create the user credentials entity and save
+    await this.userRepository.userCredential(savedUser._id)
+      .create({
+        hashedPassword: password,
+        accessToken: 'N/A',
+        refreshedToken: 'N/A',
+        credentialType: 'password-db-authentication'
+      })
+
+
+    log.info(`New Admin created =>  ${savedUser._id} : ${savedUser.email}`)
+
+    return savedUser;
   }
 
 
@@ -209,4 +257,24 @@ export class UserController {
     }
   }
 
+  @get('/users/me', {
+    responses: {
+      '200': MeResponse
+    }
+  })
+  @authenticate('jwt')
+  async me(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+  ): Promise<User> {
+
+    let id = currentUserProfile[securityId];
+    let foundUser = await this.userRepository.findById(id);
+    if (!foundUser) {
+      throw new HttpErrors.Unauthorized('Method not implemented yet');
+    }
+    return foundUser;
+  }
+
 }
+

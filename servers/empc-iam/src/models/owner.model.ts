@@ -10,7 +10,6 @@ export class Owner extends User {
   })
   passwordSet: string;
 
-
   constructor(data?: Partial<Owner>) {
     super(data);
   }
