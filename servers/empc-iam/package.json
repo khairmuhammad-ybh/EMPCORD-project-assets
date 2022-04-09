@@ -60,7 +60,7 @@
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^8.5.1",
     "loopback-connector-mongodb": "^4.2.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "tsc-watch": "^4.1.0",
     "uuid": "^3.4.0"
   },
